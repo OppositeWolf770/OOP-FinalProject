@@ -1,0 +1,26 @@
+<Library>
+  <book id="2" category="Science Fiction">
+    <title>Dune</title>
+    <author>Frank Herbert</author>
+    <year>1965</year>
+    <price>14.99</price>
+  </book>
+  <book id="3" category="Historical">
+    <title>1776</title>
+    <author>David McCullough</author>
+    <year>2005</year>
+    <price>12.5</price>
+  </book>
+  <book id="0" category="Nonfiction">
+    <title>The Story of My Life</title>
+    <author>Dr. Doolittle</author>
+    <year>2003</year>
+    <price>23.99</price>
+  </book>
+  <book id="0" category="Nonfiction">
+    <title>The Story of My Life</title>
+    <author>Dr. Doolittle</author>
+    <year>2003</year>
+    <price>23.99</price>
+  </book>
+</Library>
