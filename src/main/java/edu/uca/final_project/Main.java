@@ -2,8 +2,10 @@ package edu.uca.final_project;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import edu.uca.final_project.GUI.AttributeModal;
 import edu.uca.final_project.XMLExample.Library;
 import edu.uca.final_project.XMLExample.TableModel;
+import edu.uca.final_project.GUI.AttributeModal;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,9 +19,14 @@ public class Main {
     public static StockItems items;
     public static File file;
 
+    public static int location;
+    public static String title;
+
     public static void main(String[] args) {
         JFrame frame = new JFrame();
-        JButton button = new JButton("Test") {
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+
+        JButton addButton = new JButton("Add A column") {
             {
                 setSize(new Dimension(10, 10));
             }
@@ -29,10 +36,19 @@ public class Main {
                 setSize(new Dimension(20, 10));
             }
         };
+        JButton removeButton = new JButton("Remove a column") {
+            {
+                setSize(new Dimension(10, 10));
+            }
+        };
+        JButton addAttributeButton = new JButton("Add an attribute") {
+            {
+                setSize(new Dimension(20, 10));
+            }
+        };
 
-        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-        frame.setLocationRelativeTo(null);
-        frame.setSize(new Dimension(800, 600));
+
+
 
 
 
@@ -62,13 +78,23 @@ public class Main {
 
         frame.add(scrollPane);
 
-        frame.add(button);
+        frame.add(addButton);
+        frame.add(removeButton);
         frame.add(printbutton);
+        frame.add(addAttributeButton);
+
+        frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
 
-        button.addActionListener(event -> {
-            model.addColumn(event.getActionCommand(), new Object[] {"Row1", "Row2", "Row3"});
+        addButton.addActionListener(event -> model.addColumn(event.getActionCommand(), new Object[] {"Row1", "Row2", "Row3"}));
+        printbutton.addActionListener(_ -> System.out.println(model));
+        removeButton.addActionListener(_ -> model.removeColumn(1));
+        addAttributeButton.addActionListener(_-> {
+            AttributeModal modal = new AttributeModal(model);
+            System.out.println(title);
+            System.out.println(location);
         });
     }
 
