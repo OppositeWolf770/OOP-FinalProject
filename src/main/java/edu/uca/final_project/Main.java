@@ -5,9 +5,11 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import edu.uca.final_project.GUI.AttributeModal;
 import edu.uca.final_project.XMLExample.Library;
 import edu.uca.final_project.XMLExample.TableModel;
-import edu.uca.final_project.GUI.AttributeModal;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +23,10 @@ public class Main {
 
     public static int location;
     public static String title;
+
+    static JTextField filterField;
+
+    static TableRowSorter<javax.swing.table.TableModel> sorter;
 
     public static void main(String[] args) {
         JFrame frame = new JFrame();
@@ -76,12 +82,30 @@ public class Main {
         JScrollPane scrollPane = new JScrollPane(testtable);
         testtable.setAutoCreateColumnsFromModel(true);
 
+        sorter = new TableRowSorter<>(model);
+        testtable.setRowSorter(sorter);
+
+        filterField = new JTextField();
+        filterField.setPreferredSize(new Dimension(300,20));
+        filterField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                textFilter();
+            }
+            public void removeUpdate(DocumentEvent e) {
+                textFilter();
+            }
+            public void changedUpdate(DocumentEvent e) {
+                textFilter();
+            }
+        });
+
         frame.add(scrollPane);
 
         frame.add(addButton);
         frame.add(removeButton);
         frame.add(printbutton);
         frame.add(addAttributeButton);
+        frame.add(filterField);
 
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -139,5 +163,15 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Unable to write to file " + file + ".");
         }
+    }
+
+    private static void textFilter() {
+        RowFilter<javax.swing.table.TableModel, Integer> rf;
+        try {
+            rf = RowFilter.regexFilter(filterField.getText(), 0);
+        } catch (java.util.regex.PatternSyntaxException e) {
+            return;
+        }
+        sorter.setRowFilter(rf);
     }
 }
