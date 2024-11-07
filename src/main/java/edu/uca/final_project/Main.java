@@ -2,17 +2,12 @@ package edu.uca.final_project;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import edu.uca.final_project.GUI.AttributeModal;
 import edu.uca.final_project.GUI.ConfigurationPanel;
 import edu.uca.final_project.GUI.DisplayFrame;
 import edu.uca.final_project.XMLExample.Library;
-import edu.uca.final_project.XMLExample.TableModel;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.TableRowSorter;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -20,50 +15,26 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public class Main {
     public static XmlMapper xmlMapper = new XmlMapper();
-    public static StockItems items;
     public static File file;
 
     public static int location;
     public static String title;
 
-    static JTextField filterField;
-
-    static TableRowSorter<javax.swing.table.TableModel> sorter;
-
     public static void main(String[] args) {
-        customForm frame = new customForm();
-//        JButton addButton = new JButton("Add A column") {
-//            {
-//                setSize(new Dimension(10, 10));
-//            }
-//        };
-//        JButton printbutton = new JButton("Print to Console") {
-//            {
-//                setSize(new Dimension(20, 10));
-//            }
-//        };
-//        JButton removeButton = new JButton("Remove a column") {
-//            {
-//                setSize(new Dimension(10, 10));
-//            }
-//        };
-//        JButton addAttributeButton = new JButton("Add an attribute") {
-//            {
-//                setSize(new Dimension(20, 10));
-//            }
-//        };
+        setLookAndFeel();
 
+        var frame = new DisplayFrame();
 
+        // Load the file from the src
+        file = new File("test.xml");
+        if (!file.exists()) {
+            var configurationPanel = new ConfigurationPanel();
 
-//
-//        // Load the file from the src
-//        file = new File("source.xml");
-//        if (!file.exists() || file.isDirectory()) {
-//            frame.add(new ConfigurationPanel());
-//
-//
-//        }
-//
+            frame.add(configurationPanel.getContentPane());
+            frame.revalidate();
+            frame.repaint();
+        }
+
 //        // Attempt to
 //        try {
 //            items = loadXml(file);
@@ -126,6 +97,15 @@ public class Main {
 //        });
     }
 
+    private static void setLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
+                 IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     // Returns the filename of an XML file if one is found. returns null otherwise
     public static String checkForXML(Path stockroomsPath, String extension) throws IOException {
@@ -144,20 +124,15 @@ public class Main {
         return null;
     }
 
-    // Creates a new StockItems file if one is not found
-    private static StockItems createNewFile() {
-        return new StockItems();
-    }
 
-
-    // Read data from an XML file
-    public static StockItems loadXml(File file) throws IOException {
-        try {
-            return xmlMapper.readValue(file, StockItems.class);
-        } catch (IOException e) {
-            return new StockItems();
-        }
-    }
+//    // Read data from an XML file
+//    public static StockItems loadXml(File file) throws IOException {
+//        try {
+//            return xmlMapper.readValue(file, StockItems.class);
+//        } catch (IOException e) {
+//            return new StockItems();
+//        }
+//    }
 
     public static void saveXml(File file, Library library) {
         xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -169,13 +144,13 @@ public class Main {
         }
     }
 
-    private static void textFilter() {
-        RowFilter<javax.swing.table.TableModel, Integer> rf;
-        try {
-            rf = RowFilter.regexFilter(filterField.getText(), 0);
-        } catch (java.util.regex.PatternSyntaxException e) {
-            return;
-        }
-        sorter.setRowFilter(rf);
-    }
+//    private static void textFilter() {
+//        RowFilter<javax.swing.table.TableModel, Integer> rf;
+//        try {
+//            rf = RowFilter.regexFilter(filterField.getText(), 0);
+//        } catch (java.util.regex.PatternSyntaxException e) {
+//            return;
+//        }
+//        sorter.setRowFilter(rf);
+//    }
 }
