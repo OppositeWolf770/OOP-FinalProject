@@ -1,7 +1,7 @@
 package edu.uca.final_project.GUI;
 
 import edu.uca.final_project.XMLExample.TableModel;
-import edu.uca.final_project.Main;
+import edu.uca.final_project.Logic.Main;
 
 import javax.swing.*;
 import java.awt.*;

@@ -12,21 +12,20 @@ import java.awt.*;
 
 public class TablePanel extends JPanel {
     JTable table;
-    JPanel filterPanel;
+    JPanel filterPanel = new JPanel();
     TableModel model;
     JScrollPane scrollPane;
     TableRowSorter<TableModel> sorter;
     JTextField filterField;
     JComboBox<Object> filterComboBox;
-
-
+    JButton addButton;
 
     public TablePanel(TableModel model) {
+        System.out.println("Inside TablePanel");
+        this.model = model;
         setPreferredSize(new Dimension(1000, 400));
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-        this.model = model;
-        table = new JTable();
         scrollPane = new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setPreferredSize(new Dimension(780, 400));
 
@@ -63,8 +62,25 @@ public class TablePanel extends JPanel {
         filterPanel.add(filterComboBox);
         filterPanel.add(new JLabel("     Click on a row to update Graph"));
 
+        addButton = new JButton(){
+            {
+                setText("Add");
+            }
+        };
+
+        addButton.addActionListener(event -> model.addColumn(event.getActionCommand(), new Object[] {"Row1", "Row2", "Row3"}));
+//        removeButton.addActionListener(_ -> model.removeColumn(1));
+//        addAttributeButton.addActionListener(_-> {
+//            AttributeModal modal = new AttributeModal(model);
+//            System.out.println(title);
+//            System.out.println(location);
+//        });
+
+        filterPanel.add(addButton);
+
         add(scrollPane, BorderLayout.CENTER);
         add(filterPanel, BorderLayout.SOUTH);
+        setVisible(true);
     }
 
     private void textFilter() {
