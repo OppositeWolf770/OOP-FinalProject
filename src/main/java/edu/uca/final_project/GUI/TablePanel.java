@@ -23,11 +23,9 @@ public class TablePanel extends JPanel {
     public TablePanel(TableModel model) {
         System.out.println("Inside TablePanel");
         this.model = model;
-        setPreferredSize(new Dimension(1000, 400));
+//        setPreferredSize(new Dimension(1000, 400));
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-        scrollPane = new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(780, 400));
 
         sorter = new TableRowSorter<>(model);
         table = new JTable();
@@ -77,6 +75,9 @@ public class TablePanel extends JPanel {
 //        });
 
         filterPanel.add(addButton);
+
+        scrollPane = new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(780, 400));
 
         add(scrollPane, BorderLayout.CENTER);
         add(filterPanel, BorderLayout.SOUTH);

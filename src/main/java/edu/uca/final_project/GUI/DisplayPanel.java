@@ -13,6 +13,6 @@ public class DisplayPanel extends JPanel {
     public DisplayPanel(TableModel model) {
         System.out.println("Inside DisplayPanel");
         add(new TablePanel(model));
-        setVisible(true);
+//        setVisible(true);
     }
 }
