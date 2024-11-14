@@ -18,11 +18,14 @@ public class TablePanel extends JPanel {
     TableRowSorter<TableModel> sorter;
     JTextField filterField;
     JComboBox<Object> filterComboBox;
-    JButton addButton;
+    JButton addRowButton;
+    JButton addColumnButton;
+    DetailsPanel detailsPanel;
 
-    public TablePanel(TableModel model) {
+    public TablePanel(TableModel model, DetailsPanel detailsPanel) {
         System.out.println("Inside TablePanel");
         this.model = model;
+        this.detailsPanel = detailsPanel;
 //        setPreferredSize(new Dimension(1000, 400));
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
@@ -60,13 +63,19 @@ public class TablePanel extends JPanel {
         filterPanel.add(filterComboBox);
         filterPanel.add(new JLabel("     Click on a row to update Graph"));
 
-        addButton = new JButton(){
-            {
-                setText("Add");
-            }
-        };
+        addRowButton = new JButton() {
+                {
+                    setText("Add Row");
+                }
+            };
 
-        addButton.addActionListener(event -> model.addColumn(event.getActionCommand(), new Object[] {"Row1", "Row2", "Row3"}));
+            addColumnButton = new JButton() {
+                {
+                    setText("Add Column");
+                }
+            };
+
+//        addButton.addActionListener(event -> model.addColumn(event.getActionCommand(), new Object[] {"Row1", "Row2", "Row3"}));
 //        removeButton.addActionListener(_ -> model.removeColumn(1));
 //        addAttributeButton.addActionListener(_-> {
 //            AttributeModal modal = new AttributeModal(model);
@@ -74,7 +83,18 @@ public class TablePanel extends JPanel {
 //            System.out.println(location);
 //        });
 
-        filterPanel.add(addButton);
+        addColumnButton.addActionListener(event -> {
+            // Add a new column to the table model with default data
+            model.addColumn("New Column", new Object[]{"0", "0", "0", "0"});
+            });
+
+        addRowButton.addActionListener(event -> {
+            // Add a new row to the table model with default data
+            model.addRow(new Object[]{"0", "0", "0", "0"});
+            });
+
+        filterPanel.add(addColumnButton);
+        filterPanel.add(addRowButton);
 
         scrollPane = new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setPreferredSize(new Dimension(780, 400));
@@ -107,11 +127,41 @@ public class TablePanel extends JPanel {
         sorter.setRowFilter(rf);
     }
 
-    private class RowListener implements ListSelectionListener {
-        public void valueChanged(ListSelectionEvent event) {
-            for (int c : table.getSelectedRows()) {
-                int modelRow = table.convertRowIndexToModel(c);
+    private void updateDetailsPanel(int modelRow) {
+            String details = getRowDetails(modelRow);
+           detailsPanel.updateDetails(details);  // Use the passed DetailsPanel to update details
+        }
+
+        private String getRowDetails(int modelRow) {
+            StringBuilder details = new StringBuilder();
+
+            // Iterate through all columns for the selected row
+            for (int col = 0; col < model.getColumnCount(); col++) {
+                // Get column name and corresponding value in the selected row
+                Object columnName = model.getColumnName(col);  // Get the name of the column
+                Object value = model.getValueAt(modelRow, col);  // Get the value at the specific row and column
+                details.append(columnName).append(": ").append(value).append("\n");
+            }
+
+            // Return the built details string
+            return details.toString();
+        }
+
+
+        private class RowListener implements ListSelectionListener {
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                if (event.getValueIsAdjusting()) return;
+                // When a row is selected, update the details panel
+                int[] selectedRows = table.getSelectedRows();
+                if (selectedRows.length > 0) {
+                    for (int row : selectedRows) {
+                        int modelRow = table.convertRowIndexToModel(row); 
+                        if (modelRow >= 0 && modelRow < model.getRowCount()) { // Prevent out-of-bounds exception
+                            updateDetailsPanel(modelRow);  // Pass the model row to the details panel
+                        }
+                    }
+                }
             }
         }
-    }
 }
