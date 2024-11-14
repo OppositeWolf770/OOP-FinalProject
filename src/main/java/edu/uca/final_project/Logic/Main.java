@@ -44,13 +44,20 @@ public class Main {
 //            return;
 //        }
 //
+        DetailsPanel detailsPanel = new DetailsPanel();
+
         TableModel model = new TableModel() {
             {
                 addColumn("Corban Sucks", new Object[] {"Row1", "Row2", "Row3"});
                 addColumn("Book", new Object[] {"Row4", "Row5", "Row6"});
+                addColumn("Quantity", new Object[] {"Row1", "Row2", "Row3"});
+                addColumn("Price", new Object[] {"Row4", "Row5", "Row6"});
             }
         };
         Display.display(model);
+
+        TablePanel tablePanel = new TablePanel(model, detailsPanel);
+        DisplayPanel displayPanel = new DisplayPanel(model);
     }
 
     private static void setLookAndFeel() {
