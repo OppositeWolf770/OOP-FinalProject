@@ -9,6 +9,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.util.Objects;
 
 public class TablePanel extends JPanel {
     JTable table;
@@ -30,32 +31,41 @@ public class TablePanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
 
-        sorter = new TableRowSorter<>(model);
-        table = new JTable();
-        table.setModel(model);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.setRowSorter(sorter);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.getSelectionModel().addListSelectionListener(new RowListener());
+        table = new JTable(){
+            {
+                setModel(model);
+                getTableHeader().setReorderingAllowed(false);
+                setRowSorter(sorter = new TableRowSorter<>(model));
+                setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                getSelectionModel().addListSelectionListener(new RowListener());
+            }
+        };
 
-        filterField = new JTextField();
-        filterField.setPreferredSize(new Dimension(300,20));
-        filterField.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) {
-                textFilter();
+        filterField = new JTextField(){
+            {
+                setPreferredSize(new Dimension(300,20));
+                getDocument().addDocumentListener(new DocumentListener() {
+                    public void insertUpdate(DocumentEvent e) {
+                        textFilter();
+                    }
+                    public void removeUpdate(DocumentEvent e) {
+                        textFilter();
+                    }
+                    public void changedUpdate(DocumentEvent e) {
+                        textFilter();
+                    }
+                });
             }
-            public void removeUpdate(DocumentEvent e) {
-                textFilter();
-            }
-            public void changedUpdate(DocumentEvent e) {
-                textFilter();
-            }
-        });
+        };
 
-        filterComboBox = new JComboBox<>(new Object[]{"GDP","GDP growth","GDP per capita","Inflation GDP deflator","Inflation consumer prices"});
-        filterComboBox.setPreferredSize(new Dimension(300,20));
-        filterComboBox.setSelectedIndex(0);
-        filterComboBox.addActionListener(_ -> updateFilter());
+        filterComboBox = new JComboBox<>(model.getColumnData(1))
+        {
+            {
+                setPreferredSize(new Dimension(300,20));
+                setSelectedIndex(0);
+                addActionListener(_ -> updateFilter());
+            }
+        };
 
         filterPanel.add(new JLabel("Country Filter:"));
         filterPanel.add(filterField);
@@ -115,15 +125,17 @@ public class TablePanel extends JPanel {
     }
 
     protected void updateFilter() {
-        RowFilter<javax.swing.table.TableModel, Integer> rf = switch (filterComboBox.getSelectedIndex()) {
-            case 0 -> RowFilter.regexFilter("Gross", 1);
-            case 1 -> RowFilter.regexFilter("GDP growth", 1);
-            case 2 -> RowFilter.regexFilter("GDP per", 1);
-            case 3 -> RowFilter.regexFilter("Inflation GDP", 1);
-            case 4 -> RowFilter.regexFilter("Inflation consumer prices", 1);
-            case 5 -> RowFilter.regexFilter("Inflation GDP growth", 1);
-            default -> null;
-        };
+//        RowFilter<javax.swing.table.TableModel, Integer> rf = switch (filterComboBox.getSelectedIndex()) {
+//            case 0 -> RowFilter.regexFilter("Gross", 1);
+//            case 1 -> RowFilter.regexFilter("GDP growth", 1);
+//            case 2 -> RowFilter.regexFilter("GDP per", 1);
+//            case 3 -> RowFilter.regexFilter("Inflation GDP", 1);
+//            case 4 -> RowFilter.regexFilter("Inflation consumer prices", 1);
+//            case 5 -> RowFilter.regexFilter("Inflation GDP growth", 1);
+//            default -> null;
+//        };
+        String[] array = model.getColumnData(1);
+        RowFilter<javax.swing.table.TableModel, Integer> rf = RowFilter.regexFilter(Objects.requireNonNull(filterComboBox.getSelectedItem()).toString(), 1);
         sorter.setRowFilter(rf);
     }
 
@@ -154,12 +166,10 @@ public class TablePanel extends JPanel {
                 if (event.getValueIsAdjusting()) return;
                 // When a row is selected, update the details panel
                 int[] selectedRows = table.getSelectedRows();
-                if (selectedRows.length > 0) {
-                    for (int row : selectedRows) {
-                        int modelRow = table.convertRowIndexToModel(row); 
-                        if (modelRow >= 0 && modelRow < model.getRowCount()) { // Prevent out-of-bounds exception
-                            updateDetailsPanel(modelRow);  // Pass the model row to the details panel
-                        }
+                for (int row : selectedRows) {
+                    int modelRow = table.convertRowIndexToModel(row);
+                    if (modelRow >= 0 && modelRow < model.getRowCount()) { // Prevent out-of-bounds exception
+                        updateDetailsPanel(modelRow);  // Pass the model row to the details panel
                     }
                 }
             }

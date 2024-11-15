@@ -10,11 +10,8 @@ public class DisplayFrame extends JFrame {
         System.out.println("Inside DisplayFrame");
         setTitle("Data Frame");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-//        setPreferredSize(new Dimension(800, 600));
 
         add(new DisplayPanel(model));
-
-
 
         pack();
 

@@ -5,10 +5,6 @@ import edu.uca.final_project.XMLExample.TableModel;
 import javax.swing.*;
 
 public class DisplayPanel extends JPanel {
-    private JButton addButton = new JButton("Add a column");
-    private JButton printButton = new JButton("Print to Console");
-    private JButton removeButton = new JButton("Remove a column");
-    private JButton addAttributeButton = new JButton("Add an attribute");
 
     public DisplayPanel(TableModel model) {
         System.out.println("Inside DisplayPanel");
@@ -19,7 +15,7 @@ public class DisplayPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS)); //Places the detailsPanel below the table
         add(tablePanel); // Add TablePanel to DisplayPanel
         add(detailsPanel); // Add DetailsPanel to DisplayPanel
-        add(new TablePanel(model));
+//        add(new TablePanel(model, detailsPanel));
 //        setVisible(true);
     }
 }

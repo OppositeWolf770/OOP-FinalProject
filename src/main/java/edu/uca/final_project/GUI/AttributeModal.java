@@ -4,12 +4,13 @@ import edu.uca.final_project.XMLExample.TableModel;
 import edu.uca.final_project.Logic.Main;
 
 import javax.swing.*;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 
 public class AttributeModal{
     JDialog dialog;
     JTextField title;
-    JComboBox location;
+    JComboBox<String> location;
     JButton confirm;
 
     public AttributeModal(TableModel model){
@@ -23,12 +24,11 @@ public class AttributeModal{
             locations[i] = Integer.toString(i);
         }
 
-        for (int i = 0; i < locations.length; i++){
-            System.out.println(locations[i]);
+        for (String s : locations) {
+            System.out.println(s);
         }
 
-
-        location = new JComboBox(locations);
+        location = new JComboBox<>(locations);
 
         dialog.setModal(true);
         dialog.setTitle("Attribute Modal");

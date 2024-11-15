@@ -1,6 +1,8 @@
 package edu.uca.final_project.XMLExample;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import java.lang.reflect.Array;
 
 public class TableModel extends DefaultTableModel{
 
@@ -15,6 +17,19 @@ public class TableModel extends DefaultTableModel{
             string.append("\n");
         }
         return string.toString();
+    }
+
+    public TableColumn getColumn(int column) { //Idk if this works, haven't tested
+        return new TableColumn(column);
+    }
+
+    public String[] getColumnData(int column) { //Returns an array containing the values of the specified column
+        String[] array = new String[this.getRowCount()];
+        for(int i = 0; i < this.getRowCount(); i++) {
+            array[i] = this.getValueAt(column, i).toString();
+        }
+
+        return array;
     }
 
 
