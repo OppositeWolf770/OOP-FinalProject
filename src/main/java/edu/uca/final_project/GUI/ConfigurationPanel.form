@@ -40,12 +40,9 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="9c844" class="javax.swing.JTable" binding="categoriesTable" default-binding="true">
+          <component id="1f36d" class="javax.swing.JList" binding="list1" default-binding="true">
             <constraints/>
-            <properties>
-              <autoCreateRowSorter value="true"/>
-              <fillsViewportHeight value="false"/>
-            </properties>
+            <properties/>
           </component>
         </children>
       </scrollpane>

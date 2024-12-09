@@ -11,6 +11,7 @@ public class ConfigurationPanel {
     private JButton addCategoryButton;
     private JTable categoriesTable;
     private JScrollPane tableScrollPane;
+    private JList list1;
 
     public ConfigurationPanel() {
         DefaultTableModel tableModel = new DefaultTableModel(new Object[] {"Category", "Subcategories"}, 0);
