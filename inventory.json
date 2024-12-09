@@ -1,0 +1,61 @@
+{
+  "rootCategory": {
+    "name": "Root",
+    "subCategories": [
+      {
+        "name": "Electronics",
+        "subCategories": [],
+        "items": [
+          {
+            "name": "Phone",
+            "description": "Smartphone",
+            "amount": 100
+          },
+          {
+            "name": "Laptop",
+            "description": "Gaming laptop",
+            "amount": 50
+          }
+        ]
+      },
+      {
+        "name": "Clothing",
+        "subCategories": [],
+        "items": [
+          {
+            "name": "Shirt",
+            "description": "Cotton T-shirt",
+            "amount": 200
+          },
+          {
+            "name": "Jeans",
+            "description": "Blue denim",
+            "amount": 150
+          }
+        ]
+      },
+      {
+        "name": "Foldables",
+        "subCategories": [],
+        "items": [
+          {
+            "name": "iPhone Foldable",
+            "description": "Smartphone",
+            "amount": 2333
+          },
+          {
+            "name": "Google Pixel Fold 2",
+            "description": "Foldable Phone",
+            "amount": 3333333
+          },
+          {
+            "name": "Huawei Tri-fold",
+            "description": "Foldable Phone",
+            "amount": 2
+          }
+        ]
+      }
+    ],
+    "items": []
+  }
+}
