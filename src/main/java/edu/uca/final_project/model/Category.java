@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Category {
     private String name;
+    private Category parentCategory;
     private List<Item> items;
     private List<Category> subCategories;
 
@@ -27,8 +28,22 @@ public class Category {
         subCategories.add(category);
     }
 
+    public Category getParentCategory() {
+        return parentCategory;
+    }
+
+    public void setParentCategory(Category parentCategory) {
+        this.parentCategory = parentCategory;
+    }
+
+
     public void removeSubCategory(Category category) {
         subCategories.remove(category);
+    }
+
+    @Override
+    public String toString() {
+        return this.getName(); // Ensure the method returns the category's name
     }
 
     // Getters and Setters

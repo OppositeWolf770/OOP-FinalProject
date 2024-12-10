@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JSONPersistence {
+public class JsonIOManager {
 
     public static InventoryManager loadFromFile(String fileName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
