@@ -71,21 +71,18 @@ public class ConfigurationScreen extends JFrame {
         add(mainPanel, BorderLayout.CENTER);
 
         // Add category action (when button is pressed)
-        addCategoryButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String categoryName = categoryNameField.getText().trim();
-                if (!categoryName.isEmpty()) {
-                    // Check if the category name already exists in the list
-                    if (categoriesListModel.contains(categoryName)) {
-                        JOptionPane.showMessageDialog(null, "This category already exists.", "Duplicate Category", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        categoriesListModel.addElement(categoryName);
-                        categoryNameField.setText(""); // Clear the input
-                    }
+        addCategoryButton.addActionListener(_ -> {
+            String categoryName = categoryNameField.getText().trim();
+            if (!categoryName.isEmpty()) {
+                // Check if the category name already exists in the list
+                if (categoriesListModel.contains(categoryName)) {
+                    JOptionPane.showMessageDialog(null, "This category already exists.", "Duplicate Category", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Please enter a category name.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    categoriesListModel.addElement(categoryName);
+                    categoryNameField.setText(""); // Clear the input
                 }
+            } else {
+                JOptionPane.showMessageDialog(null, "Please enter a category name.", "Input Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -100,31 +97,26 @@ public class ConfigurationScreen extends JFrame {
         });
 
         // Save categories
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Add subcategories to the root category
-                for (int i = 0; i < categoriesListModel.size(); i++) {
-                    String categoryName = categoriesListModel.get(i);
-                    rootCategory.addSubCategory(new Category(categoryName));
-                }
-
-                // Save to JSON file
-                try {
-                    JsonIOManager.saveToFile(inventoryManager, fileName);
-                    JOptionPane.showMessageDialog(null, "Categories saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Error saving categories.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-
-                // Close the configuration window
-                dispose();
-
-                // Launch the main window with the configured categories
-                SwingUtilities.invokeLater(() -> {
-                    new MainWindow(inventoryManager);
-                });
+        saveButton.addActionListener(_ -> {
+            // Add subcategories to the root category
+            for (int i = 0; i < categoriesListModel.size(); i++) {
+                String categoryName = categoriesListModel.get(i);
+                rootCategory.addSubCategory(new Category(categoryName));
             }
+
+            // Save to JSON file
+            try {
+                JsonIOManager.saveToFile(inventoryManager, fileName);
+                JOptionPane.showMessageDialog(null, "Categories saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "Error saving categories.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            // Close the configuration window
+            dispose();
+
+            // Launch the main window with the configured categories
+            SwingUtilities.invokeLater(() -> new MainWindow(inventoryManager));
         });
 
         // Set the window visible

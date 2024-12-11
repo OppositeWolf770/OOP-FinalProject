@@ -6,7 +6,12 @@ import edu.uca.final_project.model.Item;
 import edu.uca.final_project.persistence.JsonIOManager;
 
 import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
@@ -14,11 +19,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MainWindow extends JFrame {
     private final InventoryManager inventoryManager;
     private JTable itemsTable;
+    private TableRowSorter<TableModel> sorter;
+    private JTextField filterField;
     private DefaultTableModel tableModel;
+    RowFilter<TableModel, Integer> textFilter;
     private JTree categoryTree;
     private Category currentCategory;
 
@@ -29,6 +38,7 @@ public class MainWindow extends JFrame {
         setSize(800, 600);
         initializeUI();
         setVisible(true);
+        setLocationRelativeTo(null);
     }
 
     private void initializeUI() {
@@ -38,7 +48,7 @@ public class MainWindow extends JFrame {
         JPanel leftPanel = new JPanel(new BorderLayout());
         categoryTree = new JTree();
         populateCategoryTree();
-        categoryTree.addTreeSelectionListener(e -> {
+        categoryTree.addTreeSelectionListener(_ -> {
             DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) categoryTree.getLastSelectedPathComponent();
             if (selectedNode != null) {
                 currentCategory = (Category) selectedNode.getUserObject();
@@ -50,32 +60,79 @@ public class MainWindow extends JFrame {
         add(leftPanel, BorderLayout.WEST);
 
         // Center panel: Items table
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+
+        filterField = new JTextField( 26){
+            {
+                setBorder(new LineBorder(Color.GRAY));
+                setPreferredSize(new Dimension(300,20));
+                getDocument().addDocumentListener(new DocumentListener() { // Calls textFilter() whenever there is an update in the filterField
+                    public void insertUpdate(DocumentEvent e) {
+                        textFilter();
+                    }
+                    public void removeUpdate(DocumentEvent e) {
+                        textFilter();
+                    }
+                    public void changedUpdate(DocumentEvent e) {
+                        textFilter();
+                    }
+                });
+            }
+        };
+
         tableModel = new DefaultTableModel(new String[]{"Name", "Description", "Amount", "Custom Attributes"}, 0);
         itemsTable = new JTable(tableModel);
+        itemsTable.getTableHeader().setReorderingAllowed(false);
+
+        sorter = new TableRowSorter<>(tableModel);
+        itemsTable.setRowSorter(sorter);
+
         JScrollPane tableScrollPane = new JScrollPane(itemsTable);
-        add(tableScrollPane, BorderLayout.CENTER);
+        filterPanel.add(new JLabel("Search:"));
+        filterPanel.add(filterField, BorderLayout.CENTER);
+        centerPanel.add(filterPanel, BorderLayout.NORTH);
+        centerPanel.add(tableScrollPane, BorderLayout.CENTER);
+        add(centerPanel, BorderLayout.CENTER);
 
         // Bottom panel: Add Item Button, Delete Item Button, and Edit Item Button
+        JPanel bottomPanel = getBottomPanel();
+
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        // Populate table with root category items by default
+        currentCategory = inventoryManager.getRootCategory();
+        displayCategory(currentCategory);
+    }
+
+    private JPanel getBottomPanel() {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         // Edit Item Button
         JButton editItemButton = new JButton("Edit Item");
-        editItemButton.addActionListener(e -> editSelectedItem());
+        editItemButton.addActionListener(_ -> editSelectedItem());
         bottomPanel.add(editItemButton);
 
         // Add Item Button
         JButton addItemButton = new JButton("Add Item");
-        addItemButton.addActionListener(e -> addItemToCurrentCategory());
+        addItemButton.addActionListener(_ -> addItemToCurrentCategory());
         bottomPanel.add(addItemButton);
 
         // Delete Item Button
         JButton deleteItemButton = new JButton("Delete Item");
-        deleteItemButton.addActionListener(e -> deleteSelectedItem());
+        deleteItemButton.addActionListener(_ -> deleteSelectedItem());
         bottomPanel.add(deleteItemButton);
 
         // Delete All Inventory Button (New Button)
+        JButton deleteAllInventoryButton = getAllInventoryButton();
+        bottomPanel.add(deleteAllInventoryButton);
+        return bottomPanel;
+    }
+
+    private JButton getAllInventoryButton() {
         JButton deleteAllInventoryButton = new JButton("Delete All Inventory");
-        deleteAllInventoryButton.addActionListener(e -> {
+        deleteAllInventoryButton.addActionListener(_ -> {
             int confirmation = JOptionPane.showConfirmDialog(this,
                     "Are you sure you want to delete all inventory? This action cannot be undone.",
                     "Confirm Delete All Inventory",
@@ -86,13 +143,16 @@ public class MainWindow extends JFrame {
                 deleteInventoryFile();  // Proceed to delete the file if confirmed
             }
         });
-        bottomPanel.add(deleteAllInventoryButton);
+        return deleteAllInventoryButton;
+    }
 
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        // Populate table with root category items by default
-        currentCategory = inventoryManager.getRootCategory();
-        displayCategory(currentCategory);
+    private void textFilter() {
+        try {
+            textFilter = RowFilter.regexFilter("(?i)" + filterField.getText()); // "(?i)" makes the filter case-insensitive
+        } catch (java.util.regex.PatternSyntaxException e) { // Exits the method if the exception is thrown
+            return;
+        }
+        sorter.setRowFilter(textFilter);
     }
 
     private Item findItemByName(String name) {
@@ -102,6 +162,17 @@ public class MainWindow extends JFrame {
             }
         }
         return null;
+    }
+
+    protected ImageIcon createImageIcon(String path,
+                                        String description) {
+        java.net.URL imgURL = getClass().getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL, description);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
     }
 
     private void editSelectedItem() {
@@ -123,7 +194,7 @@ public class MainWindow extends JFrame {
     }
 
     class EditItemWindow extends JDialog {
-        private Item itemToEdit;
+        private final Item itemToEdit;
 
         public EditItemWindow(JFrame parent, Item item) {
             super(parent, "Edit Item", true);
@@ -147,7 +218,7 @@ public class MainWindow extends JFrame {
             add(new JScrollPane(customAttributesArea));
 
             JButton saveButton = new JButton("Save Changes");
-            saveButton.addActionListener(e -> {
+            saveButton.addActionListener(_ -> {
                 String name = nameField.getText().trim();
                 String description = descriptionField.getText().trim();
                 int amount;
@@ -389,8 +460,6 @@ public class MainWindow extends JFrame {
         this.dispose();
 
         // Return to the configuration screen
-        SwingUtilities.invokeLater(() -> {
-            new ConfigurationScreen(new InventoryManager(), "inventory.json");
-        });
+        SwingUtilities.invokeLater(() -> new ConfigurationScreen(new InventoryManager(), "inventory.json"));
     }
 }
