@@ -63,7 +63,7 @@ public class MainWindow extends JFrame {
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
 
-        filterField = new JTextField( 26){
+        filterField = new JTextField(26) {
             {
                 setBorder(new LineBorder(Color.GRAY));
                 setPreferredSize(new Dimension(300,20));

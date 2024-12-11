@@ -11,7 +11,9 @@ import java.io.IOException;
 
 public class Application {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
         String fileName = "inventory.json";
         File file = new File(fileName);
         

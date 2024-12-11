@@ -34,6 +34,7 @@ public class JsonIOManager {
         return inventoryManager;
     }
 
+    // Save the data to the file
     public static void saveToFile(InventoryManager inventoryManager, String fileName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         InventoryData inventoryData = new InventoryData();
@@ -101,6 +102,7 @@ private static void loadCategory(Category category, CategoryData categoryData) {
         }
     }
 
+    // The model for a Category
     private static class CategoryData {
         private String name;
         private String description;

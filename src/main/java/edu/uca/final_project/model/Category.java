@@ -12,6 +12,7 @@ public class Category {
     // Constructor
     public Category(String name, String description) {
         this.name = name;
+        this.description = description;
         this.items = new ArrayList<>();
         this.subCategories = new ArrayList<>();
     }
