@@ -101,7 +101,7 @@ public class ConfigurationScreen extends JFrame {
             // Add subcategories to the root category
             for (int i = 0; i < categoriesListModel.size(); i++) {
                 String categoryName = categoriesListModel.get(i);
-                rootCategory.addSubCategory(new Category(categoryName, null));
+                rootCategory.addSubCategory(new Category(categoryName, ""));
             }
 
             // Save to JSON file

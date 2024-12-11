@@ -4,12 +4,13 @@ import java.util.List;
 
 public class Category {
     private String name;
+    private String description;
     private Category parentCategory;
     private List<Item> items;
     private List<Category> subCategories;
 
     // Constructor
-    public Category(String name) {
+    public Category(String name, String description) {
         this.name = name;
         this.items = new ArrayList<>();
         this.subCategories = new ArrayList<>();
