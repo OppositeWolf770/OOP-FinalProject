@@ -14,7 +14,7 @@ public class Application {
     public static void main(String[] args) {
         String fileName = "inventory.json";
         File file = new File(fileName);
-
+        
         SwingUtilities.invokeLater(() -> {
             InventoryManager manager;
             if (!file.exists()) {

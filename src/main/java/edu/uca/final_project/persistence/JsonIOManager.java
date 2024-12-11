@@ -23,7 +23,7 @@ public class JsonIOManager {
         InventoryManager inventoryManager = new InventoryManager();
 
         // Create root category and load its data
-        Category rootCategory = new Category(inventoryData.getRootCategory().getName());
+        Category rootCategory = new Category(inventoryData.getRootCategory().getName(), inventoryData.getRootCategory().getDescription());
 
         // Recursively load the categories and their subcategories
         loadCategory(rootCategory, inventoryData.getRootCategory());
@@ -49,7 +49,7 @@ public class JsonIOManager {
 private static void loadCategory(Category category, CategoryData categoryData) {
     // Load subcategories recursively
     for (CategoryData subCategoryData : categoryData.getSubCategories()) {
-        Category subCategory = new Category(subCategoryData.getName());
+        Category subCategory = new Category(subCategoryData.getName(), subCategoryData.getDescription());
         category.addSubCategory(subCategory);  // Add the subcategory to the parent category
         loadCategory(subCategory, subCategoryData);  // Recursively load subcategories
     }
@@ -103,6 +103,7 @@ private static void loadCategory(Category category, CategoryData categoryData) {
 
     private static class CategoryData {
         private String name;
+        private String description;
         private java.util.List<CategoryData> subCategories;
         private java.util.List<ItemData> items;
 
@@ -129,6 +130,10 @@ private static void loadCategory(Category category, CategoryData categoryData) {
         public void setItems(java.util.List<ItemData> items) {
             this.items = items;
         }
+
+        public void setDescription(String description) {this.description = description;}
+
+        public String getDescription() {return this.description;}
     }
 
     private static class ItemData {

@@ -79,6 +79,7 @@ public class MainWindow extends JFrame {
                         textFilter();
                     }
                 });
+                setToolTipText("Search the name, description, or amount of a stock item");
             }
         };
 

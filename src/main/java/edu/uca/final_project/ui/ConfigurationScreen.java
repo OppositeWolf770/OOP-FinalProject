@@ -30,7 +30,7 @@ public class ConfigurationScreen extends JFrame {
         setLayout(new BorderLayout(10, 10));
 
         // Set the root category name to "Root"
-        Category rootCategory = new Category("Root");
+        Category rootCategory = new Category("Root", null);
         inventoryManager.setRootCategory(rootCategory);
 
         // Main Panel to hold all components
@@ -101,7 +101,7 @@ public class ConfigurationScreen extends JFrame {
             // Add subcategories to the root category
             for (int i = 0; i < categoriesListModel.size(); i++) {
                 String categoryName = categoriesListModel.get(i);
-                rootCategory.addSubCategory(new Category(categoryName));
+                rootCategory.addSubCategory(new Category(categoryName, null));
             }
 
             // Save to JSON file
