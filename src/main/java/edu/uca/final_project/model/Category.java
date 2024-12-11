@@ -41,9 +41,10 @@ public class Category {
         subCategories.remove(category);
     }
 
+    // Returns the name of the category
     @Override
     public String toString() {
-        return this.getName(); // Ensure the method returns the category's name
+        return this.getName();
     }
 
     // Getters and Setters
