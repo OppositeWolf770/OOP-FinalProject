@@ -7,12 +7,10 @@ public class Category {
     private Category parentCategory;
     private List<Item> items;
     private List<Category> subCategories;
-    private String description;
 
     // Constructor
-    public Category(String name, String description) {
+    public Category(String name) {
         this.name = name;
-        this.description = description;
         this.items = new ArrayList<>();
         this.subCategories = new ArrayList<>();
     }
@@ -38,16 +36,9 @@ public class Category {
         this.parentCategory = parentCategory;
     }
 
+
     public void removeSubCategory(Category category) {
         subCategories.remove(category);
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     @Override

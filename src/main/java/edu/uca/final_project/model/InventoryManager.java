@@ -4,7 +4,7 @@ public class InventoryManager {
     private Category rootCategory;
 
     public InventoryManager() {
-        this.rootCategory = new Category("Root", null);
+        this.rootCategory = new Category("Root");
     }
 
     // Setter for rootCategory to set it after loading from a file

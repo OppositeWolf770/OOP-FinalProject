@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class MainWindow extends JFrame {
     private final InventoryManager inventoryManager;
@@ -439,6 +438,7 @@ public class MainWindow extends JFrame {
         }
     }
 
+    // Deletes the inventory file and allows the user to start a new file
     private void deleteInventoryFile() {
         String fileName = "inventory.json";  // Or use the file name you're using
         File file = new File(fileName);
@@ -456,6 +456,7 @@ public class MainWindow extends JFrame {
         }
     }
 
+    // Used when deleting the entire inventory file to go back to the main configuration window
     private void returnToConfigurationScreen() {
         // Stop the current window
         this.dispose();
