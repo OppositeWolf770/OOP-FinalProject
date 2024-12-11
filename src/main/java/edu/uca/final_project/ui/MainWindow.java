@@ -46,10 +46,11 @@ public class MainWindow extends JFrame {
         // Left panel: Category tree
         JPanel leftPanel = new JPanel(new BorderLayout());
         categoryTree = new JTree();
+        categoryTree.setToggleClickCount(0);
         populateCategoryTree();
         categoryTree.addTreeSelectionListener(_ -> {
             DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) categoryTree.getLastSelectedPathComponent();
-            if (selectedNode != null) {
+            if (selectedNode != null && !categoryTree.isRowSelected(0)) {
                 currentCategory = (Category) selectedNode.getUserObject();
                 displayCategory(currentCategory);
             }
