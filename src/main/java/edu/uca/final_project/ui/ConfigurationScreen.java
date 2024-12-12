@@ -12,6 +12,7 @@ import java.io.IOException;
 
 public class ConfigurationScreen extends JFrame {
     private final DefaultListModel<String> categoriesListModel;
+    private final DefaultListModel<String> categoriesDescriptionListModel;
     private final JTextField categoryNameField;
     private final JTextArea categoryDescriptionField;
 
@@ -57,6 +58,7 @@ public class ConfigurationScreen extends JFrame {
         // Subcategory list panel
         JPanel listPanel = new JPanel(new BorderLayout());
         categoriesListModel = new DefaultListModel<>();
+        categoriesDescriptionListModel = new DefaultListModel<>();
         JList<String> categoriesList = new JList<>(categoriesListModel);
         categoriesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScrollPane = new JScrollPane(categoriesList);
@@ -80,12 +82,14 @@ public class ConfigurationScreen extends JFrame {
         // Add category action (when button is pressed)
         addCategoryButton.addActionListener(_ -> {
             String categoryName = categoryNameField.getText().trim();
+            String categoryDescription = categoryDescriptionField.getText().trim();
             if (!categoryName.isEmpty()) {
                 // Check if the category name already exists in the list
                 if (categoriesListModel.contains(categoryName)) {
                     JOptionPane.showMessageDialog(null, "This category already exists.", "Duplicate Category", JOptionPane.ERROR_MESSAGE);
                 } else {
                     categoriesListModel.addElement(categoryName);
+                    categoriesDescriptionListModel.addElement(categoryDescription);
                     categoryNameField.setText(""); // Clear the input
                     categoryDescriptionField.setText("");
                 }
@@ -109,7 +113,8 @@ public class ConfigurationScreen extends JFrame {
             // Add subcategories to the root category
             for (int i = 0; i < categoriesListModel.size(); i++) {
                 String categoryName = categoriesListModel.get(i);
-                rootCategory.addSubCategory(new Category(categoryName, ""));
+                String categoryDescription = categoriesDescriptionListModel.get(i);
+                rootCategory.addSubCategory(new Category(categoryName, categoryDescription));
             }
 
             // Save to JSON file

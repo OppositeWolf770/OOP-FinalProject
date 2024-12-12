@@ -69,6 +69,7 @@ private static void loadCategory(Category category, CategoryData categoryData) {
     private static CategoryData convertCategoryToData(Category category) {
         CategoryData categoryData = new CategoryData();
         categoryData.setName(category.getName());
+        categoryData.setDescription(category.getDescription());
         categoryData.setSubCategories(new java.util.ArrayList<>());
         categoryData.setItems(new java.util.ArrayList<>());
 
@@ -109,33 +110,17 @@ private static void loadCategory(Category category, CategoryData categoryData) {
         private java.util.List<CategoryData> subCategories;
         private java.util.List<ItemData> items;
 
-        public String getName() {
-            return name;
-        }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
 
-        public void setName(String name) {
-            this.name = name;
-        }
+        public java.util.List<CategoryData> getSubCategories() { return subCategories; }
+        public void setSubCategories(java.util.List<CategoryData> subCategories) { this.subCategories = subCategories; }
 
-        public java.util.List<CategoryData> getSubCategories() {
-            return subCategories;
-        }
+        public java.util.List<ItemData> getItems() { return items; }
+        public void setItems(java.util.List<ItemData> items) { this.items = items; }
 
-        public void setSubCategories(java.util.List<CategoryData> subCategories) {
-            this.subCategories = subCategories;
-        }
-
-        public java.util.List<ItemData> getItems() {
-            return items;
-        }
-
-        public void setItems(java.util.List<ItemData> items) {
-            this.items = items;
-        }
-
-        public void setDescription(String description) {this.description = description;}
-
-        public String getDescription() {return this.description;}
+        public void setDescription(String description) { this.description = description; }
+        public String getDescription() { return this.description; }
     }
 
     private static class ItemData {
@@ -146,7 +131,6 @@ private static void loadCategory(Category category, CategoryData categoryData) {
         public String getName() {
             return name;
         }
-
         public void setName(String name) {
             this.name = name;
         }
@@ -154,7 +138,6 @@ private static void loadCategory(Category category, CategoryData categoryData) {
         public String getDescription() {
             return description;
         }
-
         public void setDescription(String description) {
             this.description = description;
         }
@@ -162,7 +145,6 @@ private static void loadCategory(Category category, CategoryData categoryData) {
         public int getAmount() {
             return amount;
         }
-
         public void setAmount(int amount) {
             this.amount = amount;
         }

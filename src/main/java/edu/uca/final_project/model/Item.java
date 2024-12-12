@@ -10,10 +10,10 @@ public class Item {
 
     // Constructor
     public Item(String name, String description, int amount, Map<String, String> customAttributes) {
-        this.name = name;
-        this.description = description;
-        this.amount = amount;
-        this.customAttributes = customAttributes;
+        setName(name);
+        setDescription(description);
+        setAmount(amount);
+        setCustomAttributes(customAttributes);
     }
 
     // Getters and Setters

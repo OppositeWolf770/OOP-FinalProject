@@ -1,9 +1,12 @@
 package edu.uca.final_project.model;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Category {
     private String name;
+    @JsonProperty("description")
     private String description;
     private Category parentCategory;
     private List<Item> items;
@@ -11,10 +14,10 @@ public class Category {
 
     // Constructor
     public Category(String name, String description) {
-        this.name = name;
-        this.description = description;
-        this.items = new ArrayList<>();
-        this.subCategories = new ArrayList<>();
+        setName(name);
+        setDescription(description);
+        setItems(new ArrayList<>());
+        setSubCategories(new ArrayList<>());
     }
 
     // Methods for adding/removing items or subcategories
@@ -57,4 +60,8 @@ public class Category {
 
     public List<Category> getSubCategories() { return subCategories; }
     public void setSubCategories(List<Category> subCategories) { this.subCategories = subCategories; }
+
+    public String getDescription() { return description; }
+
+    public void setDescription(String description) { this.description = description; }
 }

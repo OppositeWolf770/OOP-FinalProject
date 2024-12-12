@@ -32,6 +32,7 @@ public class MainWindow extends JFrame {
     private final InventoryManager inventoryManager;
     private JTable itemsTable;
     private TableRowSorter<TableModel> sorter;
+    private JTextArea categoryDescriptionArea;
     private JTextField filterField;
     private DefaultTableModel tableModel;
     RowFilter<TableModel, Integer> textFilter;
@@ -54,7 +55,14 @@ public class MainWindow extends JFrame {
 
     private void initializeUI(){
         setLayout(new BorderLayout());
-
+        JPanel descriptionPanel = new JPanel(new BorderLayout());
+        categoryDescriptionArea = new JTextArea();
+        categoryDescriptionArea.setEditable(false);
+        categoryDescriptionArea.setLineWrap(true);
+        categoryDescriptionArea.setWrapStyleWord(true);
+        descriptionPanel.setPreferredSize(new Dimension(200, 100));
+        descriptionPanel.add(new JScrollPane(categoryDescriptionArea), BorderLayout.CENTER);
+        add(descriptionPanel, BorderLayout.EAST);
         // Left panel: Category tree
         JPanel leftPanel = new JPanel(new BorderLayout());
         categoryTree = new JTree();
@@ -63,6 +71,13 @@ public class MainWindow extends JFrame {
         categoryTree.addTreeSelectionListener(_ -> {
             DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) categoryTree.getLastSelectedPathComponent();
             if (selectedNode != null) {
+                if (selectedNode.isRoot()) {
+                    currentCategory = inventoryManager.getRootCategory();
+                    categoryDescriptionArea.setText(currentCategory.getDescription());
+                } else {
+                    currentCategory = (Category) selectedNode.getUserObject();
+                    categoryDescriptionArea.setText(currentCategory.getDescription());
+                }
                 if (selectedNode.isRoot()) {
                     currentCategory = inventoryManager.getRootCategory();
                 } else {
