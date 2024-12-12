@@ -23,4 +23,16 @@
     <year>2003</year>
     <price>23.99</price>
   </book>
+  <book id="0" category="Nonfiction">
+    <title>The Story of My Life</title>
+    <author>Dr. Doolittle</author>
+    <year>2003</year>
+    <price>23.99</price>
+  </book>
+  <book id="0" category="Nonfiction">
+    <title>The Story of My Life</title>
+    <author>Dr. Doolittle</author>
+    <year>2003</year>
+    <price>23.99</price>
+  </book>
 </Library>
