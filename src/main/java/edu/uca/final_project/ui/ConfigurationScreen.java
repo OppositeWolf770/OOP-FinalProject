@@ -27,6 +27,9 @@ public class ConfigurationScreen extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
+        // Set the icon for configuration screen
+        setIconImage(new ImageIcon(getClass().getResource("/wrench-regular-24.png")).getImage());
+
         // Set the root category name to "Root"
         Category rootCategory = new Category("Root", null);
         inventoryManager.setRootCategory(rootCategory);

@@ -35,6 +35,10 @@ public class MainWindow extends JFrame {
         setTitle("Inventory Management System");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 600);
+
+        // Set the icon
+        setIconImage(new ImageIcon(getClass().getResource("/package-solid-24.png")).getImage());
+
         initializeUI();
         setVisible(true);
         setLocationRelativeTo(null);
@@ -50,8 +54,12 @@ public class MainWindow extends JFrame {
         populateCategoryTree();
         categoryTree.addTreeSelectionListener(_ -> {
             DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) categoryTree.getLastSelectedPathComponent();
-            if (selectedNode != null && !categoryTree.isRowSelected(0)) {
-                currentCategory = (Category) selectedNode.getUserObject();
+            if (selectedNode != null) {
+                if (selectedNode.isRoot()) {
+                    currentCategory = inventoryManager.getRootCategory();
+                } else {
+                    currentCategory = (Category) selectedNode.getUserObject();
+                }
                 displayCategory(currentCategory);
             }
         });
