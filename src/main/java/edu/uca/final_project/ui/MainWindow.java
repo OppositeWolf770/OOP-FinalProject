@@ -108,7 +108,9 @@ public class MainWindow extends JFrame {
     }
 
     private JPanel getBottomPanel() {
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+
 
         // Edit Item Button
         JButton editItemButton = new JButton("Edit Item");
@@ -125,7 +127,15 @@ public class MainWindow extends JFrame {
         deleteItemButton.addActionListener(_ -> deleteSelectedItem());
         bottomPanel.add(deleteItemButton);
 
-        // Delete All Inventory Button (New Button)
+        // Spacer
+        bottomPanel.add(Box.createHorizontalGlue());
+
+        // Add Category Button
+        JButton addCategoryButton = new JButton("Add Category");
+        addCategoryButton.addActionListener(_ -> addCategoryToCurrentCategory());
+        bottomPanel.add(addCategoryButton);
+
+        // Delete All Inventory Button
         JButton deleteAllInventoryButton = getAllInventoryButton();
         bottomPanel.add(deleteAllInventoryButton);
         return bottomPanel;
@@ -275,6 +285,9 @@ public class MainWindow extends JFrame {
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Categories"); // Use a generic name for root node
         addSubcategoriesToTree(rootNode, rootCategory);  // Add only subcategories to the tree
         categoryTree.setModel(new DefaultTreeModel(rootNode));
+        for (int i = 0; i < categoryTree.getRowCount(); i++) {
+            categoryTree.expandRow(i);
+        }
     }
 
     private void addSubcategoriesToTree(DefaultMutableTreeNode parentNode, Category parentCategory) {
@@ -306,6 +319,61 @@ public class MainWindow extends JFrame {
             formatted.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");
         }
         return formatted.substring(0, formatted.length() - 2); // Remove trailing comma and space
+    }
+
+    private void addCategoryToCurrentCategory() {
+        if (currentCategory == null) {
+            JOptionPane.showMessageDialog(this, "Please select a category first.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        JTextField nameField = new JTextField(20);
+        JTextField descriptionField = new JTextField(20);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);  // Add space between components
+
+        // Name field
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(new JLabel("Name:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        panel.add(nameField, gbc);
+
+        // Description field
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Description:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        panel.add(descriptionField, gbc);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Category", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            String name = nameField.getText().trim();
+            String description = descriptionField.getText().trim();
+
+            // Add the new category to the current category
+            Category newCategory = new Category(name, description);
+            currentCategory.addSubCategory(newCategory);
+
+            // Save the updated inventory to the file
+            try {
+                JsonIOManager.saveToFile(inventoryManager, "inventory.json");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Failed to save inventory to file.", "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+
+            // Refresh the category tree to show the new category
+            populateCategoryTree();
+        }
     }
 
     private void addItemToCurrentCategory() {
