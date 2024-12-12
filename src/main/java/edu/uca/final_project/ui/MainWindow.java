@@ -135,6 +135,11 @@ public class MainWindow extends JFrame {
         addCategoryButton.addActionListener(_ -> addCategoryToCurrentCategory());
         bottomPanel.add(addCategoryButton);
 
+        // Delete Category Button
+        JButton deleteCategoryButton = new JButton("Delete Category");
+        deleteCategoryButton.addActionListener(_ -> deleteCategory());
+        bottomPanel.add(deleteCategoryButton);
+
         // Delete All Inventory Button
         JButton deleteAllInventoryButton = getAllInventoryButton();
         bottomPanel.add(deleteAllInventoryButton);
@@ -173,17 +178,6 @@ public class MainWindow extends JFrame {
             }
         }
         return null;
-    }
-
-    protected ImageIcon createImageIcon(String path,
-                                        String description) {
-        java.net.URL imgURL = getClass().getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL, description);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
     }
 
     private void editSelectedItem() {
@@ -330,6 +324,29 @@ public class MainWindow extends JFrame {
         for (int i = 0; i < categoryTree.getRowCount(); i++) {
             categoryTree.expandRow(i);
         }
+
+        // Calculate the width of the longest category name
+        int maxWidth = 1000; // Maximum width in pixels
+        int width = calculateMaxCategoryWidth(rootNode, categoryTree.getFontMetrics(categoryTree.getFont()));
+        width = Math.min(width, maxWidth);
+
+        // Set the preferred size of the JTree
+        categoryTree.setPreferredSize(new Dimension(width, categoryTree.getPreferredSize().height));
+        categoryTree.revalidate();
+        categoryTree.repaint();
+
+        // Revalidate the parent container
+        this.revalidate();
+        this.repaint();
+    }
+
+    private int calculateMaxCategoryWidth(DefaultMutableTreeNode node, FontMetrics fontMetrics) {
+        int maxWidth = fontMetrics.stringWidth(node.toString());
+        for (int i = 0; i < node.getChildCount(); i++) {
+            DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) node.getChildAt(i);
+            maxWidth = Math.max(maxWidth, calculateMaxCategoryWidth(childNode, fontMetrics));
+        }
+        return maxWidth + 20; // Add some padding
     }
 
     private void addSubcategoriesToTree(DefaultMutableTreeNode parentNode, Category parentCategory) {
@@ -401,6 +418,12 @@ public class MainWindow extends JFrame {
             String name = nameField.getText().trim();
             String description = descriptionField.getText().trim();
 
+            // Validate the category name
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Category name cannot be blank.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             // Add the new category to the current category
             Category newCategory = new Category(name, description);
             currentCategory.addSubCategory(newCategory);
@@ -416,6 +439,51 @@ public class MainWindow extends JFrame {
             // Refresh the category tree to show the new category
             populateCategoryTree();
         }
+    }
+
+    private void deleteCategory() {
+        if (currentCategory == null || currentCategory == inventoryManager.getRootCategory()) {
+            JOptionPane.showMessageDialog(this, "Please select a subcategory to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int confirmation = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete the category: " + currentCategory.getName() + "? This will delete all subcategories. This action cannot be undone.",
+                "Confirm Delete Category",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (confirmation == JOptionPane.YES_OPTION) {
+            Category parentCategory = findParentCategory(inventoryManager.getRootCategory(), currentCategory);
+            if (parentCategory != null) {
+                parentCategory.removeSubCategory(currentCategory);
+
+                // Save the updated inventory to the file
+                try {
+                    JsonIOManager.saveToFile(inventoryManager, "inventory.json");
+                    populateCategoryTree(); // Refresh the category tree
+                    currentCategory = inventoryManager.getRootCategory(); // Reset to root category
+                    displayCategory(currentCategory); // Refresh the table
+                    JOptionPane.showMessageDialog(this, "Category deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(this, "Failed to save inventory to file.", "Error", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private Category findParentCategory(Category parent, Category target) {
+        for (Category subCategory : parent.getSubCategories()) {
+            if (subCategory.equals(target)) {
+                return parent;
+            }
+            Category found = findParentCategory(subCategory, target);
+            if (found != null) {
+                return found;
+            }
+        }
+        return null;
     }
 
     private void addItemToCurrentCategory() {
