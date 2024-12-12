@@ -212,22 +212,64 @@ public class MainWindow extends JFrame {
             this.itemToEdit = item;
 
             setSize(400, 300);
-            setLayout(new GridLayout(5, 2));
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 10, 10, 10);  // Add space between components
+            gbc.fill = GridBagConstraints.HORIZONTAL;
 
             JTextField nameField = new JTextField(item.getName());
             JTextField descriptionField = new JTextField(item.getDescription());
             JTextField amountField = new JTextField(String.valueOf(item.getAmount()));
             JTextArea customAttributesArea = new JTextArea(formatCustomAttributesForEdit(item.getCustomAttributes()));
+            customAttributesArea.setLineWrap(true);
+            customAttributesArea.setWrapStyleWord(true);
+            JScrollPane customAttributesScrollPane = new JScrollPane(customAttributesArea);
 
-            add(new JLabel("Name:"));
-            add(nameField);
-            add(new JLabel("Description:"));
-            add(descriptionField);
-            add(new JLabel("Amount:"));
-            add(amountField);
-            add(new JLabel("Custom Attributes (key=value, one per line):"));
-            add(new JScrollPane(customAttributesArea));
+            // Name field
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.WEST;
+            add(new JLabel("Name:"), gbc);
 
+            gbc.gridx = 1;
+            gbc.gridy = 0;
+            add(nameField, gbc);
+
+            // Description field
+            gbc.gridx = 0;
+            gbc.gridy = 1;
+            add(new JLabel("Description:"), gbc);
+
+            gbc.gridx = 1;
+            gbc.gridy = 1;
+            add(descriptionField, gbc);
+
+            // Amount field
+            gbc.gridx = 0;
+            gbc.gridy = 2;
+            add(new JLabel("Amount:"), gbc);
+
+            gbc.gridx = 1;
+            gbc.gridy = 2;
+            add(amountField, gbc);
+
+            // Custom attributes text area
+            gbc.gridx = 0;
+            gbc.gridy = 3;
+            gbc.gridheight = 2;
+            add(new JLabel("Custom Attributes (key=value, one per line):"), gbc);
+
+            gbc.gridx = 1;
+            gbc.gridy = 3;
+            gbc.gridheight = 2;
+            gbc.fill = GridBagConstraints.BOTH;
+            add(customAttributesScrollPane, gbc);
+
+            // Save button
+            gbc.gridx = 0;
+            gbc.gridy = 5;
+            gbc.gridwidth = 2;
+            gbc.anchor = GridBagConstraints.CENTER;
             JButton saveButton = new JButton("Save Changes");
             saveButton.addActionListener(_ -> {
                 String name = nameField.getText().trim();
@@ -264,7 +306,7 @@ public class MainWindow extends JFrame {
                     ex.printStackTrace();
                 }
             });
-            add(saveButton);
+            add(saveButton, gbc);
 
             setVisible(true);
         }
