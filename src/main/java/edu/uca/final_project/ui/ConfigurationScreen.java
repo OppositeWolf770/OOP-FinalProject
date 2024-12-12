@@ -1,14 +1,15 @@
 package edu.uca.final_project.ui;
 
-import edu.uca.final_project.model.InventoryManager;
 import edu.uca.final_project.model.Category;
+import edu.uca.final_project.model.InventoryManager;
 import edu.uca.final_project.persistence.JsonIOManager;
+
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ConfigurationScreen extends JFrame {
     private final DefaultListModel<String> categoriesListModel;
@@ -26,7 +27,7 @@ public class ConfigurationScreen extends JFrame {
         setLayout(new BorderLayout(10, 10));
 
         // Set the icon for configuration screen
-        setIconImage(new ImageIcon(getClass().getResource("/wrench-regular-24.png")).getImage());
+        setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/wrench-regular-24.png"))).getImage());
 
         // Set the root category name to "Root"
         Category rootCategory = new Category("Root", "");
@@ -49,10 +50,21 @@ public class ConfigurationScreen extends JFrame {
         // Category description input panel
         JPanel descriptionPanel = new JPanel(new BorderLayout());
         descriptionPanel.add(new JLabel("Description:"), BorderLayout.NORTH);
-        categoryDescriptionField = new JTextArea(2, 40);
-        categoryDescriptionField.setBorder(new LineBorder(Color.GRAY));
-        categoryDescriptionField.setFont(categoryNameField.getFont());
-        descriptionPanel.add(categoryDescriptionField, BorderLayout.CENTER);
+
+        categoryDescriptionField = new JTextArea(2,40){
+            {
+                setLineWrap(true);
+                setWrapStyleWord(true);
+                setFont(categoryNameField.getFont());
+            }
+        };
+        JScrollPane descriptionScrollPane = new JScrollPane(categoryDescriptionField) {
+            {
+                setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            }
+        };
+
+        descriptionPanel.add(descriptionScrollPane, BorderLayout.CENTER);
         mainPanel.add(descriptionPanel);
 
         // Subcategory list panel

@@ -6,7 +6,7 @@ import edu.uca.final_project.model.Item;
 import edu.uca.final_project.persistence.JsonIOManager;
 
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -20,13 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.awt.BorderLayout;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import java.util.Objects;
 
 public class MainWindow extends JFrame {
     private final InventoryManager inventoryManager;
@@ -46,7 +40,7 @@ public class MainWindow extends JFrame {
         setSize(800, 600);
 
         // Set the icon
-        setIconImage(new ImageIcon(getClass().getResource("/package-solid-24.png")).getImage());
+        setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/package-solid-24.png"))).getImage());
 
         initializeUI();
         setVisible(true);
@@ -55,14 +49,21 @@ public class MainWindow extends JFrame {
 
     private void initializeUI(){
         setLayout(new BorderLayout());
+
         JPanel descriptionPanel = new JPanel(new BorderLayout());
-        categoryDescriptionArea = new JTextArea();
-        categoryDescriptionArea.setEditable(false);
-        categoryDescriptionArea.setLineWrap(true);
-        categoryDescriptionArea.setWrapStyleWord(true);
-        descriptionPanel.setPreferredSize(new Dimension(200, 100));
+        categoryDescriptionArea = new JTextArea(){
+            {
+                setEditable(false);
+                setLineWrap(true);
+                setWrapStyleWord(true);
+                setFont(new Font("Tahoma", Font.PLAIN, 11));
+                setText("Click on a category to view more information");
+            }
+        };
+        descriptionPanel.setPreferredSize(new Dimension(150, 100));
         descriptionPanel.add(new JScrollPane(categoryDescriptionArea), BorderLayout.CENTER);
         add(descriptionPanel, BorderLayout.EAST);
+
         // Left panel: Category tree
         JPanel leftPanel = new JPanel(new BorderLayout());
         categoryTree = new JTree();
@@ -73,15 +74,10 @@ public class MainWindow extends JFrame {
             if (selectedNode != null) {
                 if (selectedNode.isRoot()) {
                     currentCategory = inventoryManager.getRootCategory();
-                    categoryDescriptionArea.setText(currentCategory.getDescription());
+                    categoryDescriptionArea.setText(setDescription());
                 } else {
                     currentCategory = (Category) selectedNode.getUserObject();
-                    categoryDescriptionArea.setText(currentCategory.getDescription());
-                }
-                if (selectedNode.isRoot()) {
-                    currentCategory = inventoryManager.getRootCategory();
-                } else {
-                    currentCategory = (Category) selectedNode.getUserObject();
+                    categoryDescriptionArea.setText(setDescription());
                 }
                 displayCategory(currentCategory);
             }
@@ -116,10 +112,6 @@ public class MainWindow extends JFrame {
 
         tableModel = new DefaultTableModel(new String[]{"Name", "Description", "Amount", "Custom Attributes"}, 0);
         itemsTable = new JTable(tableModel){
-//            @Override
-//            public Point getToolTipLocation(MouseEvent event) {
-//                return new Point(10, 10);
-//            }
         };
         itemsTable.setDefaultRenderer(Object.class, new TestCellRenderer());
         itemsTable.getTableHeader().setReorderingAllowed(false);
@@ -144,7 +136,15 @@ public class MainWindow extends JFrame {
         displayCategory(currentCategory);
     }
 
-    public class TestCellRenderer extends DefaultTableCellRenderer {
+    private String setDescription(){
+        String description = currentCategory.getDescription();
+        String title = currentCategory.getName();
+        int count = currentCategory.getItems().size();
+
+        return "Category Name: " + title + "\n\nStock Count: " + count + "\n\nDescription: \n" + description;
+    }
+
+    public static class TestCellRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             setToolTipText("<html><p width=\"500\">" + value.toString() + "</p></html>");
@@ -257,6 +257,7 @@ public class MainWindow extends JFrame {
             gbc.fill = GridBagConstraints.HORIZONTAL;
 
             JTextField nameField = new JTextField(item.getName());
+            System.out.println(nameField.getFont());
             JTextField descriptionField = new JTextField(item.getDescription());
             JTextField amountField = new JTextField(String.valueOf(item.getAmount()));
             JTextArea customAttributesArea = new JTextArea(formatCustomAttributesForEdit(item.getCustomAttributes()));
@@ -342,7 +343,6 @@ public class MainWindow extends JFrame {
                     dispose(); // Close the edit window
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(this, "Failed to save inventory to file.", "Error", JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
                 }
             });
             add(saveButton, gbc);
@@ -373,7 +373,7 @@ public class MainWindow extends JFrame {
         // Calculate the width of the longest category name
         int maxWidth = 1000; // Maximum width in pixels
         int width = calculateMaxCategoryWidth(rootNode, categoryTree.getFontMetrics(categoryTree.getFont()));
-        width = Math.min(width, maxWidth);
+        width = Math.min(width, maxWidth) + 50;
 
         // Set the preferred size of the JTree
         categoryTree.setPreferredSize(new Dimension(width, categoryTree.getPreferredSize().height));
@@ -478,7 +478,6 @@ public class MainWindow extends JFrame {
                 JsonIOManager.saveToFile(inventoryManager, "inventory.json");
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, "Failed to save inventory to file.", "Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
             }
 
             // Refresh the category tree to show the new category
@@ -512,7 +511,6 @@ public class MainWindow extends JFrame {
                     JOptionPane.showMessageDialog(this, "Category deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(this, "Failed to save inventory to file.", "Error", JOptionPane.ERROR_MESSAGE);
-                    e.printStackTrace();
                 }
             }
         }
@@ -544,6 +542,11 @@ public class MainWindow extends JFrame {
                 setWrapStyleWord(true);
             }
         };
+        JScrollPane descriptionScrollPane = new JScrollPane(descriptionField){
+            {
+                setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            }
+        };
         JTextField amountField = new JTextField(20);
         JTextArea customAttributesArea = new JTextArea(5, 20){
             {
@@ -556,29 +559,17 @@ public class MainWindow extends JFrame {
                 setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
             }
         };
-        JScrollPane descriptionScrollPane = new JScrollPane(descriptionField){
-            {
-                setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            }
-        };
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         panel.add(new JLabel("Name:"));
-
         panel.add(nameField);
-
         panel.add(new JLabel("Description:"));
-
         panel.add(descriptionScrollPane);
-
         panel.add(new JLabel("Amount:"));
-
         panel.add(amountField);
-
         panel.add(new JLabel("Custom Attributes (key=value, one per line):"));
-
         panel.add(customAttributesScrollPane);
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Add New Item", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -611,7 +602,6 @@ public class MainWindow extends JFrame {
                 JsonIOManager.saveToFile(inventoryManager, "inventory.json");
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, "Failed to save inventory to file.", "Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
             }
 
             // Refresh the table to show the new item
@@ -648,7 +638,6 @@ public class MainWindow extends JFrame {
                     JOptionPane.showMessageDialog(this, "Item deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(this, "Failed to save inventory to file.", "Error", JOptionPane.ERROR_MESSAGE);
-                    e.printStackTrace();
                 }
             }
         }

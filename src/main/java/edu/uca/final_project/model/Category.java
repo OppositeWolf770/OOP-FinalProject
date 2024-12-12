@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Category {
-    private String name;
     @JsonProperty("description")
     private String description;
-    private Category parentCategory;
+    private String name;
     private List<Item> items;
     private List<Category> subCategories;
 
@@ -32,15 +31,6 @@ public class Category {
     public void addSubCategory(Category category) {
         subCategories.add(category);
     }
-
-    public Category getParentCategory() {
-        return parentCategory;
-    }
-
-    public void setParentCategory(Category parentCategory) {
-        this.parentCategory = parentCategory;
-    }
-
 
     public void removeSubCategory(Category category) {
         subCategories.remove(category);
