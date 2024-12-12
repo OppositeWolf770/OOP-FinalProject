@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -19,6 +20,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.awt.BorderLayout;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class MainWindow extends JFrame {
     private final InventoryManager inventoryManager;
@@ -44,7 +52,7 @@ public class MainWindow extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    private void initializeUI() {
+    private void initializeUI(){
         setLayout(new BorderLayout());
 
         // Left panel: Category tree
@@ -92,7 +100,13 @@ public class MainWindow extends JFrame {
         };
 
         tableModel = new DefaultTableModel(new String[]{"Name", "Description", "Amount", "Custom Attributes"}, 0);
-        itemsTable = new JTable(tableModel);
+        itemsTable = new JTable(tableModel){
+//            @Override
+//            public Point getToolTipLocation(MouseEvent event) {
+//                return new Point(10, 10);
+//            }
+        };
+        itemsTable.setDefaultRenderer(Object.class, new TestCellRenderer());
         itemsTable.getTableHeader().setReorderingAllowed(false);
 
         sorter = new TableRowSorter<>(tableModel);
@@ -113,6 +127,14 @@ public class MainWindow extends JFrame {
         // Populate table with root category items by default
         currentCategory = inventoryManager.getRootCategory();
         displayCategory(currentCategory);
+    }
+
+    public class TestCellRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setToolTipText("<html><p width=\"500\">" + value.toString() + "</p></html>");
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        }
     }
 
     private JPanel getBottomPanel() {
@@ -394,34 +416,34 @@ public class MainWindow extends JFrame {
             return;
         }
 
-        JTextField nameField = new JTextField(20);
-        JTextField descriptionField = new JTextField(20);
-
         JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);  // Add space between components
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        // Name field
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        panel.add(new JLabel("Name:"), gbc);
+        JTextField nameField = new JTextField(20);
+        JTextArea descriptionField = new JTextArea(3, 20){
+            {
+                setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+                setLineWrap(true);
+                setWrapStyleWord(true);
+            }
+        };
 
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        panel.add(nameField, gbc);
 
-        // Description field
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Description:"), gbc);
 
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        panel.add(descriptionField, gbc);
+        JPanel namePanel = new JPanel();
+        JLabel nameLabel = new JLabel("Name");
+        namePanel.add(nameLabel);
 
-        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Category", JOptionPane.OK_CANCEL_OPTION);
+        JLabel descriptionLabel = new JLabel("Description");
+        JPanel descriptionPanel = new JPanel();
+        descriptionPanel.add(descriptionLabel);
+
+        panel.add(namePanel);
+        panel.add(nameField);
+        panel.add(descriptionPanel);
+        panel.add(descriptionField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Category", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             String name = nameField.getText().trim();
             String description = descriptionField.getText().trim();
@@ -501,58 +523,50 @@ public class MainWindow extends JFrame {
         }
 
         JTextField nameField = new JTextField(20);
-        JTextField descriptionField = new JTextField(20);
+        JTextArea descriptionField = new JTextArea(3,20){
+            {
+                setLineWrap(true);
+                setWrapStyleWord(true);
+            }
+        };
         JTextField amountField = new JTextField(20);
-        JTextArea customAttributesArea = new JTextArea(5, 20);
-        customAttributesArea.setLineWrap(true);
-        customAttributesArea.setWrapStyleWord(true);
-        JScrollPane customAttributesScrollPane = new JScrollPane(customAttributesArea);
+        JTextArea customAttributesArea = new JTextArea(5, 20){
+            {
+                setLineWrap(true);
+                setWrapStyleWord(true);
+            }
+        };
+        JScrollPane customAttributesScrollPane = new JScrollPane(customAttributesArea){
+            {
+                setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            }
+        };
+        JScrollPane descriptionScrollPane = new JScrollPane(descriptionField){
+            {
+                setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            }
+        };
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);  // Add space between components
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        // Name field
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        panel.add(new JLabel("Name:"), gbc);
+        panel.add(new JLabel("Name:"));
 
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        panel.add(nameField, gbc);
+        panel.add(nameField);
 
-        // Description field
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Description:"), gbc);
+        panel.add(new JLabel("Description:"));
 
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        panel.add(descriptionField, gbc);
+        panel.add(descriptionScrollPane);
 
-        // Amount field
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(new JLabel("Amount:"), gbc);
+        panel.add(new JLabel("Amount:"));
 
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        panel.add(amountField, gbc);
+        panel.add(amountField);
 
-        // Custom attributes text area
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        panel.add(new JLabel("Custom Attributes (key=value, one per line):"), gbc);
+        panel.add(new JLabel("Custom Attributes (key=value, one per line):"));
 
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.gridheight = 2;
-        gbc.fill = GridBagConstraints.BOTH;
-        panel.add(customAttributesScrollPane, gbc);
+        panel.add(customAttributesScrollPane);
 
-        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Item", JOptionPane.OK_CANCEL_OPTION);
+        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Item", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             String name = nameField.getText().trim();
             String description = descriptionField.getText().trim();

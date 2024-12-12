@@ -4,21 +4,18 @@ import edu.uca.final_project.model.InventoryManager;
 import edu.uca.final_project.model.Category;
 import edu.uca.final_project.persistence.JsonIOManager;
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 public class ConfigurationScreen extends JFrame {
-    private InventoryManager inventoryManager;
-    private DefaultListModel<String> categoriesListModel;
-    private JList<String> categoriesList;
-    private JTextField categoryNameField;
-    private String fileName;
+    private final DefaultListModel<String> categoriesListModel;
+    private final JTextField categoryNameField;
+    private final JTextArea categoryDescriptionField;
 
     public ConfigurationScreen(InventoryManager inventoryManager, String fileName) {
-        this.inventoryManager = inventoryManager;
-        this.fileName = fileName;
 
         // Setup window
         setTitle("Configure Categories");
@@ -31,7 +28,7 @@ public class ConfigurationScreen extends JFrame {
         setIconImage(new ImageIcon(getClass().getResource("/wrench-regular-24.png")).getImage());
 
         // Set the root category name to "Root"
-        Category rootCategory = new Category("Root", null);
+        Category rootCategory = new Category("Root", "");
         inventoryManager.setRootCategory(rootCategory);
 
         // Main Panel to hold all components
@@ -48,13 +45,22 @@ public class ConfigurationScreen extends JFrame {
         categoryPanel.add(addCategoryButton);
         mainPanel.add(categoryPanel);
 
+        // Category description input panel
+        JPanel descriptionPanel = new JPanel(new BorderLayout());
+        descriptionPanel.add(new JLabel("Description:"), BorderLayout.NORTH);
+        categoryDescriptionField = new JTextArea(2, 40);
+        categoryDescriptionField.setBorder(new LineBorder(Color.GRAY));
+        categoryDescriptionField.setFont(categoryNameField.getFont());
+        descriptionPanel.add(categoryDescriptionField, BorderLayout.CENTER);
+        mainPanel.add(descriptionPanel);
+
         // Subcategory list panel
         JPanel listPanel = new JPanel(new BorderLayout());
         categoriesListModel = new DefaultListModel<>();
-        categoriesList = new JList<>(categoriesListModel);
+        JList<String> categoriesList = new JList<>(categoriesListModel);
         categoriesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScrollPane = new JScrollPane(categoriesList);
-        listPanel.add(new JLabel("Subcategories:"), BorderLayout.NORTH);
+        listPanel.add(new JLabel("Main Categories:"), BorderLayout.NORTH);
         listPanel.add(listScrollPane, BorderLayout.CENTER);
         mainPanel.add(listPanel);
 
@@ -81,6 +87,7 @@ public class ConfigurationScreen extends JFrame {
                 } else {
                     categoriesListModel.addElement(categoryName);
                     categoryNameField.setText(""); // Clear the input
+                    categoryDescriptionField.setText("");
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Please enter a category name.", "Input Error", JOptionPane.ERROR_MESSAGE);
